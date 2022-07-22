@@ -3,8 +3,8 @@
 version: 2.1
 
 default_docker_img: &def
-    docker: 
-      - image: cimg/base:stable
+  docker: 
+    - image: cimg/base:stable
 
 commands:
   print_pipeline_id: 
