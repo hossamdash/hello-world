@@ -46,7 +46,7 @@ jobs:
       - run: mkdir /tmp/my_workspace
       - run: echo $MY_SECRET > /tmp/my_workspace/name.txt
       - persist_to_workspace:
-          root: my_workspace
+          root: /tmp/my_workspace
           paths:
             - "name.txt"
   get-my-name: 
