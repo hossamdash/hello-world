@@ -39,7 +39,24 @@ jobs:
       - run:
           name: "Say my name"
           command: "echo $MY_SECRET"
-
+  save-my-name: 
+    docker: 
+      - image: cimg/base:stable
+    steps: 
+      - run: mkdir /tmp/my_workspace
+      - run: echo $MY_SECRET > /tmp/my_workspace/name.txt
+      - persist_to_workspace:
+          root: my_workspace
+          paths:
+            - "name.txt"
+  get-my-name: 
+    docker: 
+      - image: cimg/base:stable
+    steps: 
+      - attach_workspace: 
+          at: /tmp/my_workspace
+      - run: cat /tmp/my_workspace/name.txt
+    
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -52,3 +69,7 @@ workflows:
       - say-my-name: 
           requires:
             - say-bye
+      - save-my-name
+      - get-my-name:
+          requires: 
+            - save-my-name
