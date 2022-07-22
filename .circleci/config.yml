@@ -3,9 +3,9 @@
 version: 2.1
 
 commands:
-  print_pipeline_id: 
+  print_pipeline_id:
     description: "current workflow id"
-    steps: 
+    steps:
       - run: echo $CIRCLE_WORKFLOW_ID
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
@@ -44,49 +44,61 @@ jobs:
       - run:
           name: "Say my name"
           command: "echo $MY_SECRET"
-  save-my-name: 
-    docker: 
+  save-my-name:
+    docker:
       - image: cimg/base:stable
-    steps: 
+    steps:
       - run: mkdir /tmp/my_workspace
       - run: echo test123 > /tmp/my_workspace/name.txt
       - persist_to_workspace:
           root: /tmp/my_workspace
           paths:
             - "name.txt"
-  get-my-name: 
-    docker: 
+  get-my-name:
+    docker:
       - image: cimg/base:stable
-    steps: 
-      - attach_workspace: 
+    steps:
+      - attach_workspace:
           at: /tmp/my_workspace
       - run: cat /tmp/my_workspace/name.txt
   useless-confirmation:
-    docker: 
+    docker:
       - image: cimg/base:stable
     steps:
       - run: echo "workflow "
       - print_pipeline_id
       - run: echo " finished successfully"
+  fail-intentionally:
+    docker:
+      - image: cimg/base:stable
+    steps: 
+      - run: echo 1 > /tst.txt
+      - run:
+          name: "handle failure"
+          command: "echo you did something wrong, moron"
+          when: on_fail
 
-    
+  
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   say-hello-workflow:
     jobs:
-      - say-hello
-      - say-bye: 
-          requires: 
-            - say-hello
-      - say-my-name: 
-          requires:
-            - say-bye
-      - save-my-name
-      - get-my-name:
-          requires: 
-            - save-my-name
-      - useless-confirmation: 
-          requires:
-            - say-my-name
-            - get-my-name
+      # - say-hello
+      # - say-bye:
+      #     requires:
+      #       - say-hello
+      # - say-my-name:
+      #     requires:
+      #       - say-bye
+      # - save-my-name
+      # - get-my-name:
+      #     requires:
+      #       - save-my-name
+      # - useless-confirmation:
+      #     requires:
+      #       - say-my-name
+      #       - get-my-name
+      - fail-intentionally
+
