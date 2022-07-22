@@ -2,10 +2,6 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-default_docker_img: &def
-  docker: 
-    - image: cimg/base:stable
-
 commands:
   print_pipeline_id: 
     description: "current workflow id"
@@ -66,7 +62,8 @@ jobs:
           at: /tmp/my_workspace
       - run: cat /tmp/my_workspace/name.txt
   useless-confirmation:
-    <<: *def
+    docker: 
+      - image: cimg/base:stable
     steps:
       - run: echo "workflow "
       - print_pipeline_id
